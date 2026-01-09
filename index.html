@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+    <title>Voxel Minecraft Web (Prototipo)</title>
+    <style>
+      html,body,#app { height: 100%; margin: 0; overflow: hidden; background: #87CEEB; }
+      #ui {
+        position: absolute; left: 10px; top: 10px; color: white; font-family: sans-serif;
+        background: rgba(0,0,0,0.25); padding: 8px; border-radius: 6px;
+      }
+      #hotbar { display: flex; gap:6px; margin-top:6px; }
+      .slot { width:32px; height:32px; background:rgba(255,255,255,0.1); display:flex;align-items:center;justify-content:center; border:2px solid rgba(255,255,255,0.08); color:white; font-weight:bold; }
+      #instructions { position:absolute; right:10px; top:10px; background:rgba(0,0,0,0.25); padding:8px; color:white; border-radius:6px; font-family:sans-serif; }
+    </style>
+  </head>
+  <body>
+    <div id="app"></div>
+    <div id="ui">
+      <div>Bloque seleccionado: <span id="selected">Tierra</span></div>
+      <div id="hotbar">
+        <div class="slot" data-block="dirt">D</div>
+        <div class="slot" data-block="grass">G</div>
+        <div class="slot" data-block="stone">S</div>
+        <div class="slot" data-block="wood">W</div>
+      </div>
+    </div>
+    <div id="instructions">
+      WASD mover - Click izquierdo: romper - Click derecho: colocar - M: alternar cursor
+    </div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
