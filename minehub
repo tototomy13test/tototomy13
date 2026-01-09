@@ -1,0 +1,130 @@
+// ==UserScript==
+// @name         Minecraft 3D Básico PenguinMod
+// @version      1.0
+// @description  Minecraft 3D con animales y herramientas
+// ==/UserScript==
+
+(async function() {
+    // Crear canvas
+    const canvas = document.createElement("canvas");
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    document.body.appendChild(canvas);
+    const gl = canvas.getContext("webgl");
+
+    if (!gl) {
+        alert("WebGL no soportado");
+        return;
+    }
+
+    // --- Variables globales ---
+    const BLOCK_SIZE = 1;
+    const WORLD_SIZE = 16; // 16x16 bloques por simplicidad
+    let world = [];
+
+    // Tipos de bloques
+    const BLOCKS = {
+        AIR: 0,
+        GRASS: 1,
+        DIRT: 2,
+        STONE: 3,
+        WATER: 4,
+        WOOD: 5,
+        LEAF: 6
+    };
+
+    // --- Generar terreno simple ---
+    function generateWorld() {
+        for (let x = 0; x < WORLD_SIZE; x++) {
+            world[x] = [];
+            for (let z = 0; z < WORLD_SIZE; z++) {
+                world[x][z] = [];
+                let height = Math.floor(Math.random() * 3) + 1;
+                for (let y = 0; y < height; y++) {
+                    world[x][z][y] = (y === height - 1) ? BLOCKS.GRASS : BLOCKS.DIRT;
+                }
+                // agua si bajo
+                for (let y = height; y < 2; y++) world[x][z][y] = BLOCKS.WATER;
+            }
+        }
+    }
+
+    generateWorld();
+
+    // --- Crear árbol ---
+    function placeTree(x, z) {
+        const baseHeight = Math.floor(Math.random() * 2) + 3;
+        for (let y = 2; y < 2 + baseHeight; y++) world[x][z][y] = BLOCKS.WOOD;
+        // hojas
+        for (let dx = -1; dx <= 1; dx++) {
+            for (let dz = -1; dz <= 1; dz++) {
+                world[x + dx] = world[x + dx] || [];
+                world[x + dx][z + dz] = world[x + dx][z + dz] || [];
+                world[x + dx][z + dz][2 + baseHeight] = BLOCKS.LEAF;
+            }
+        }
+    }
+
+    // colocar árboles aleatorios
+    for (let i = 0; i < 5; i++) {
+        let x = Math.floor(Math.random() * WORLD_SIZE);
+        let z = Math.floor(Math.random() * WORLD_SIZE);
+        placeTree(x, z);
+    }
+
+    // --- Animales pasivos ---
+    let animals = [];
+    const ANIMAL_TYPES = ["cow", "sheep", "chicken"];
+
+    function spawnAnimals() {
+        for (let i = 0; i < 5; i++) {
+            animals.push({
+                type: ANIMAL_TYPES[Math.floor(Math.random() * ANIMAL_TYPES.length)],
+                x: Math.random() * WORLD_SIZE,
+                y: 2,
+                z: Math.random() * WORLD_SIZE
+            });
+        }
+    }
+
+    spawnAnimals();
+
+    // --- Inventario simple ---
+    let inventory = {
+        wood: 0,
+        stone: 0,
+        sword: 0
+    };
+
+    // --- Teclas movimiento ---
+    let keys = {};
+    document.addEventListener("keydown", e => keys[e.key] = true);
+    document.addEventListener("keyup", e => keys[e.key] = false);
+
+    let player = {x: 2, y: 3, z: 2, yaw: 0, pitch: 0};
+
+    // --- Loop principal ---
+    function loop() {
+        // mover jugador simple
+        if (keys["w"]) player.z -= 0.1;
+        if (keys["s"]) player.z += 0.1;
+        if (keys["a"]) player.x -= 0.1;
+        if (keys["d"]) player.x += 0.1;
+
+        renderScene();
+        requestAnimationFrame(loop);
+    }
+
+    // --- Render básico ---
+    function renderScene() {
+        gl.clearColor(0.5, 0.8, 1.0, 1.0);
+        gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+
+        // por ahora no hacemos render 3D real, es solo concepto
+        // puedes usar Three.js para render real 3D más adelante
+    }
+
+    loop();
+
+    console.log("Minecraft 3D básico cargado");
+})();
